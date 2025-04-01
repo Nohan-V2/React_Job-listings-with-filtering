@@ -1,35 +1,58 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useEffect, useState } from "react";
+import "./App.css";
+import Card from "./components/Card";
+import CompanyLogo from "./components/CompanyLogo";
+import PresentationWrapper from "./components/PresentationWrapper";
+import CompanyWrapper from "./components/CompanyWrapper";
+import CompanyName from "./components/CompanyName";
+import BaliseWrapper from "./components/BaliseWrapper";
+import NewBalise from "./components/NewBalise";
+import FeaturedBalise from "./components/FeaturedBalise";
+import JobTitle from "./components/JobTitle";
+import ExperienceContainer from "./components/ExperienceContainer";
+import TextExperience from "./components/TextExperience";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [userData, setUserData] = useState([]);
+
+  useEffect(() => {
+    async function getData() {
+      const res = await fetch("../data.json");
+      const data = await res.json();
+
+      setUserData(data);
+    }
+
+    getData();
+  }, []);
+
+  console.log(userData);
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <main>
+      {userData.map((user) => (
+        <Card key={user.id}>
+          <CompanyLogo imgSrc={user.logo} imgAlt={user.company} />
+          <PresentationWrapper>
+            <CompanyWrapper>
+              <CompanyName company={user.company} />
+              <BaliseWrapper>
+                <NewBalise />
+                <FeaturedBalise />
+              </BaliseWrapper>
+            </CompanyWrapper>
+            <JobTitle job={user.position} />
+            <ExperienceContainer>
+              <TextExperience info={user.postedAt} />
+              <TextExperience info={user.contract} />
+              <TextExperience info={user.location} />
+            </ExperienceContainer>
+          </PresentationWrapper>
+          <hr className="separate-bar" />
+        </Card>
+      ))}
+    </main>
+  );
 }
 
-export default App
+export default App;
